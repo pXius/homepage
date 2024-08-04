@@ -1,3 +1,10 @@
+# ⚠️ This is a fork! 
+This is a personal fork of the original project, created to implement changes that do not align with the original vision.
+
+If you're looking for the official `Homepage`, you can find it here ▶️ [gethomepage/homepage](https://github.com/gethomepage/homepage).
+
+---
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="images/banner_light@2x.png">
