@@ -1,7 +1,9 @@
 name: Update Fork and Build Docker
 
 on:
-  workflow_dispatch: # Allows manual triggering
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *' # Runs daily at midnight UTC
 
 jobs:
   update-fork:
@@ -24,7 +26,20 @@ jobs:
           git checkout main
           git merge upstream/main
 
+      - name: Check for Changes
+        id: changes
+        run: |
+          git fetch origin
+          LOCAL=$(git rev-parse HEAD)
+          REMOTE=$(git rev-parse @{u})
+          if [ $LOCAL != $REMOTE ]; then
+            echo "changes_detected=true" >> $GITHUB_ENV
+          else
+            echo "changes_detected=false" >> $GITHUB_ENV
+          fi
+  
       - name: Push Changes to Fork
+        if: env.changes_detected == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
@@ -33,6 +48,7 @@ jobs:
 
   build-and-push-docker:
     needs: update-fork
+    if: needs.update-fork.outputs.changes_detected == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
